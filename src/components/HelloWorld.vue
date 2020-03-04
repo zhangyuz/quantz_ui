@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <highcharts :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
     <v-row class="text-center">
       <v-col cols="12">
         <v-img
@@ -92,10 +93,28 @@
 </template>
 
 <script>
+
 export default {
   name: 'HelloWorld',
 
   data: () => ({
+    stockOptions: {
+      rangeSelector: {
+        selected: 1
+      },
+      title: {
+        text: 'AAPL Stock Price'
+      },
+      series: [{
+        name: 'AAPL',
+        data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
+        pointStart: Date.UTC(2018, 1, 1),
+        pointInterval: 1000 * 3600 * 24,
+        tooltip: {
+          valueDecimals: 2
+        }
+      }]
+    },
     ecosystem: [
       {
         text: 'vuetify-loader',
