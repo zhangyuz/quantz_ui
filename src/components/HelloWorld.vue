@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <highcharts :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
+    <div>{{ indexDaily }}</div>
     <v-row class="text-center">
       <v-col cols="12">
         <v-img
@@ -94,9 +95,27 @@
 
 <script>
 
+import gql from 'graphql-tag'
+
 export default {
   name: 'HelloWorld',
 
+  apollo: {
+    indexDaily: gql`query {
+  indexDaily(tsCode:"000001.SH", tradeDate:"20200211"){
+    edges{
+      node{
+        close
+        tradeDate
+      }
+    }
+    pageInfo{
+      startCursor
+      endCursor
+    }
+  }
+}`
+  },
   data: () => ({
     stockOptions: {
       rangeSelector: {
