@@ -6,7 +6,6 @@ import vuetify from './plugins/vuetify'
 import HighchartsVue from 'highcharts-vue'
 import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
-import { createProvider } from './vue-apollo'
 
 stockInit(Highcharts)
 
@@ -17,6 +16,5 @@ new Vue({
   router,
   store,
   vuetify,
-  apolloProvider: createProvider(),
   render: h => h(App)
 }).$mount('#app')
