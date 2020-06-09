@@ -1,121 +1,50 @@
 <template>
   <v-container>
     <highcharts :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
+    <highcharts :constructor-type="'stockChart'" :options="IndexOptions"></highcharts>
     <div>{{ indexDaily }}</div>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
 <script>
-
 import gql from 'graphql-tag'
+import axios from 'axios'
+
+var axiosIns = axios.create({
+  baseURL: 'http://127.0.0.1:5000/',
+  timeout: 5000
+})
 
 export default {
   name: 'HelloWorld',
 
   apollo: {
-    indexDaily: gql`query {
-  indexDaily(tsCode:"000001.SH", tradeDate:"20200211"){
-    edges{
-      node{
-        close
-        tradeDate
+    indexDaily: gql`
+      query {
+        indexDaily(tsCode: "000001.SH", tradeDate: "20200211") {
+          edges {
+            node {
+              close
+              tradeDate
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+          }
+        }
       }
-    }
-    pageInfo{
-      startCursor
-      endCursor
-    }
-  }
-}`
+    `
   },
+
+  methods: {
+    query_data: function () {
+      axiosIns.get('/quantz/').then(resp => {
+        console.log(resp.data)
+      })
+    }
+  },
+
   data: () => ({
     stockOptions: {
       rangeSelector: {
@@ -124,66 +53,64 @@ export default {
       title: {
         text: 'AAPL Stock Price'
       },
-      series: [{
-        name: 'AAPL',
-        data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
-        pointStart: Date.UTC(2018, 1, 1),
-        pointInterval: 1000 * 3600 * 24,
-        tooltip: {
-          valueDecimals: 2
+      series: [
+        {
+          name: 'AAPL',
+          data: [
+            10,
+            20,
+            10,
+            23,
+            65,
+            121,
+            60,
+            44,
+            66,
+            98,
+            30,
+            32,
+            56,
+            25,
+            12,
+            36,
+            53
+          ],
+          pointStart: Date.UTC(2018, 1, 1),
+          pointInterval: 1000 * 3600 * 24,
+          tooltip: {
+            valueDecimals: 2
+          }
         }
-      }]
+      ]
     },
-    ecosystem: [
-      {
-        text: 'vuetify-loader',
-        href: 'https://github.com/vuetifyjs/vuetify-loader'
-      },
-      {
-        text: 'github',
-        href: 'https://github.com/vuetifyjs/vuetify'
-      },
-      {
-        text: 'awesome-vuetify',
-        href: 'https://github.com/vuetifyjs/awesome-vuetify'
-      }
-    ],
-    importantLinks: [
-      {
-        text: 'Documentation',
-        href: 'https://vuetifyjs.com'
-      },
-      {
-        text: 'Chat',
-        href: 'https://community.vuetifyjs.com'
-      },
-      {
-        text: 'Made with Vuetify',
-        href: 'https://madewithvuejs.com/vuetify'
-      },
-      {
-        text: 'Twitter',
-        href: 'https://twitter.com/vuetifyjs'
-      },
-      {
-        text: 'Articles',
-        href: 'https://medium.com/vuetify'
-      }
-    ],
-    whatsNext: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com/components/api-explorer'
-      },
-      {
-        text: 'Select a layout',
-        href: 'https://vuetifyjs.com/layout/pre-defined'
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
-      }
-    ]
-  })
+    IndexOptions: {
+      rangeSelector: { selected: 1 },
+      title: { text: '000001.SH' },
+      series: [
+        {
+          name: '000001.SH',
+          data: [1, 2, 3, 4, 5, 6]
+        }
+      ]
+    }
+  }),
+
+  created: () => {
+    console.log('created called')
+    console.log(this)
+  },
+
+  updated: () => {
+    console.log('updated called')
+  },
+
+  mounted: () => {
+    console.log('mounted called')
+    this.methods.query_data()
+  },
+
+  destroyed: () => {
+    console.log('mounted called')
+  }
 }
 </script>
